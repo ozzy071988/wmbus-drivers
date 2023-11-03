@@ -31,10 +31,14 @@ private:
     esphome::optional<float> ret_val{};
     uint32_t usage = 0;
     // Seems that AT-WMBUS-08 is not decrypted. Maybe it is not true, but let's try ...
-    size_t i = 11;
-    usage = ((uint32_t)telegram[i+3] << 24) | ((uint32_t)telegram[i+2] << 16) |
-            ((uint32_t)telegram[i+1] << 8)  | ((uint32_t)telegram[i+0]);
-    ret_val = (usage / 3.0) / 1000.0;
+    if (telegram[10] == 0xb6) {
+          // Oups really old style telegram that we cannot decode.
+        } else {
+        size_t i = 11;
+        usage = ((uint32_t)telegram[i+3] << 24) | ((uint32_t)telegram[i+2] << 16) |
+                ((uint32_t)telegram[i+1] << 8)  | ((uint32_t)telegram[i+0]);
+        ret_val = (usage / 3.0) / 1000.0;
+    }
     return ret_val;
   };
 };
